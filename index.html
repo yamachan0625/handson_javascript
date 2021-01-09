@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <script>
+      function urlBase64ToUint8Array(base64String) {
+        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding)
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+      }
+
+      const vapidKey =
+        "BOx9Vp_b-5xYqts9xAN1LUtQfCCBzR8_Ar_StHtbhp5lLKg9aKe7Qgaiu2PjNB7YygqvG8MwPRgwc_RZ8kfHF0U"; // 作成した公開鍵
+      const convertedVapidKey = urlBase64ToUint8Array(vapidKey);
+
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").then((registration) => {
+          registration.pushManager
+            .subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: convertedVapidKey,
+            })
+            .then((subscription) => {
+              console.log(subscription);
+            });
+        });
+      });
+    </script>
+  </body>
+</html>
